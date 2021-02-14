@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "18260967192",
+    "project_id": "shareme-63b22",
+    "storage_bucket": "shareme-63b22.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:18260967192:android:c0227dffbfbd16d542a86d",
+        "android_client_info": {
+          "package_name": "com.example.shareme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "18260967192-6jt3gd1gmdcr69r35liibmjtmaebd0de.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOLnNLs_xVRPWEFkvhSc6Pu_nziALSDO0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "18260967192-6jt3gd1gmdcr69r35liibmjtmaebd0de.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
