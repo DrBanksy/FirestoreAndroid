@@ -3,10 +3,13 @@ package com.example.shareme
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ToggleButton
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
     lateinit var fab: View
@@ -17,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var thoughtsAdapter : ThoughtsAdapter
     lateinit var thoughtListView : RecyclerView
     val thoughts = arrayListOf<Thought>()
+    val thoughtsCollectionRef = FirebaseFirestore.getInstance().collection(THOUGHTS_REF)
 
     var selectedCategory = FUNNY
 
@@ -41,6 +45,30 @@ class MainActivity : AppCompatActivity() {
         val layoutManager = LinearLayoutManager(this)
         thoughtListView.layoutManager = layoutManager
 
+        thoughtsCollectionRef.get()
+                .addOnSuccessListener { snapshot ->
+                    for (document in snapshot.documents) {
+                        val data = document.data
+                        val name = data?.get(USERNAME) as String
+                        val date = data[TIMESTAMP] as Timestamp
+                        val timestamp = date.toDate()
+                        val thoughtTxt = data[THOUGHT_TXT] as String
+                        val numLikes = data[NUM_LIKES] as Long
+                        val numComments = data[NUM_COMMENTS] as Long
+                        val documentId = document.id
+
+                        val newThought = Thought(name, timestamp, thoughtTxt,
+                                numLikes.toInt(), numComments.toInt(), documentId )
+
+                        thoughts.add(newThought)
+                    }
+
+                    // signals the thoughtsadapter to refresh its views
+                    thoughtsAdapter.notifyDataSetChanged()
+
+                } . addOnFailureListener { exception ->
+                    Log.e("Exception", "Could not add post: $exception")
+                }
 
 
     }
