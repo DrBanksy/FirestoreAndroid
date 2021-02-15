@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.ToggleButton
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 class MainActivity : AppCompatActivity() {
     lateinit var fab: View
@@ -12,6 +14,9 @@ class MainActivity : AppCompatActivity() {
     lateinit var mainCrazyBtn : ToggleButton
     lateinit var mainFunnyBtn : ToggleButton
     lateinit var mainPopularBtn : ToggleButton
+    lateinit var thoughtsAdapter : ThoughtsAdapter
+    lateinit var thoughtListView : RecyclerView
+    val thoughts = arrayListOf<Thought>()
 
     var selectedCategory = FUNNY
 
@@ -22,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         mainCrazyBtn = findViewById(R.id.mainCrazyBtn)
         mainFunnyBtn = findViewById(R.id.mainFunnyBtn)
         mainPopularBtn = findViewById(R.id.mainPopularBtn)
+        thoughtListView = findViewById(R.id.thoughtListView)
 
         fab = findViewById(R.id.fab)
 
@@ -29,6 +35,13 @@ class MainActivity : AppCompatActivity() {
             val addThoughtIntent = Intent(this, AddThoughtActivity::class.java)
             startActivity(addThoughtIntent)
         }
+
+        thoughtsAdapter = ThoughtsAdapter(thoughts)
+        thoughtListView. adapter = thoughtsAdapter
+        val layoutManager = LinearLayoutManager(this)
+        thoughtListView.layoutManager = layoutManager
+
+
 
     }
 
