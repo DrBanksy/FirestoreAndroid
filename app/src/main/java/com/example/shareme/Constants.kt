@@ -4,6 +4,7 @@ package com.example.shareme
 //collection reference
 
 const val THOUGHTS_REF = "thoughts"
+const val USERS_REF = "users"
 
 
 //Category constants
@@ -21,3 +22,4 @@ const val NUM_LIKES = "numLikes"
 const val THOUGHT_TXT =  "thoughtTxt"
 const val TIMESTAMP = "timestamp"
 const val USERNAME = "username"
+const val DATE_CREATED = "dateCreated"

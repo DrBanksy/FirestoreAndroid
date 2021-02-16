@@ -32,10 +32,8 @@ class ThoughtsAdapter(val thoughts : ArrayList<Thought>) : RecyclerView.Adapter<
             likesImage?.setOnClickListener {
                 FirebaseFirestore.getInstance().collection(THOUGHTS_REF).document(thought.documentId)
                         .update(NUM_LIKES, thought.numLikes + 1)
-
             }
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
