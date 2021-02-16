@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -27,14 +28,18 @@ class ThoughtsAdapter(val thoughts : ArrayList<Thought>) : RecyclerView.Adapter<
 
             val dateFormatter = SimpleDateFormat("MMM d, h:mm a", Locale.getDefault())
             val dateString = dateFormatter.format(thought.timestamp)
-
             timestamp?.text = thought.timestamp.toString()
+            likesImage?.setOnClickListener {
+                FirebaseFirestore.getInstance().collection(THOUGHTS_REF).document(thought.documentId)
+                        .update(NUM_LIKES, thought.numLikes + 1)
+
+            }
         }
 
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent?.context).inflate(R.layout.thought_list_view, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.thought_list_view, parent, false)
         return ViewHolder(view)
     }
 

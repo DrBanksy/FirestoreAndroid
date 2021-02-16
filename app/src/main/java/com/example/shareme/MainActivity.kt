@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.QuerySnapshot
 
 class MainActivity : AppCompatActivity() {
     lateinit var fab: View
@@ -21,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var thoughtListView : RecyclerView
     val thoughts = arrayListOf<Thought>()
     val thoughtsCollectionRef = FirebaseFirestore.getInstance().collection(THOUGHTS_REF)
+    lateinit var thoughtsListener : ListenerRegistration
 
     var selectedCategory = FUNNY
 
@@ -39,38 +43,74 @@ class MainActivity : AppCompatActivity() {
             val addThoughtIntent = Intent(this, AddThoughtActivity::class.java)
             startActivity(addThoughtIntent)
         }
-
         thoughtsAdapter = ThoughtsAdapter(thoughts)
-        thoughtListView. adapter = thoughtsAdapter
+        thoughtListView.adapter = thoughtsAdapter
         val layoutManager = LinearLayoutManager(this)
         thoughtListView.layoutManager = layoutManager
+    }
 
-        thoughtsCollectionRef.get()
-                .addOnSuccessListener { snapshot ->
-                    for (document in snapshot.documents) {
-                        val data = document.data
-                        val name = data?.get(USERNAME) as String
-                        val date = data[TIMESTAMP] as Timestamp
-                        val timestamp = date.toDate()
-                        val thoughtTxt = data[THOUGHT_TXT] as String
-                        val numLikes = data[NUM_LIKES] as Long
-                        val numComments = data[NUM_COMMENTS] as Long
-                        val documentId = document.id
+    override fun onResume() {
+        super.onResume()
+        setListener()
+        Log.e("MainActivity", "OnResume Called")
+    }
 
-                        val newThought = Thought(name, timestamp, thoughtTxt,
-                                numLikes.toInt(), numComments.toInt(), documentId )
+    fun setListener() {
+        if(selectedCategory == POPULAR) {
+            thoughtsListener = thoughtsCollectionRef
+                    .orderBy(NUM_LIKES, Query.Direction.DESCENDING)
+                    .addSnapshotListener(this) { snapshot, exception ->
+                        //check for exception
+                        if(exception != null) {
+                            Log.e("Exception", "Could not retrieve documents: $exception")
+                        }
 
-                        thoughts.add(newThought)
+                        //check if there are documents in the snapshot
+                        if(snapshot != null) {
+                           parseData(snapshot)
+                        }
                     }
+        } else {
+            //listening for any changes on the database
+            //if something does change then this gets called
+            thoughtsListener = thoughtsCollectionRef
+                    .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
+                    .whereEqualTo(CATEGORY, selectedCategory)
+                    .addSnapshotListener(this) { snapshot, exception ->
+                        //check for exception
+                        if(exception != null) {
+                            Log.e("Exception", "Could not retrieve documents: $exception")
+                        }
+                        //check if there are documents in the snapshot
+                        if(snapshot != null) {
+                           parseData(snapshot)
+                        }
+                    }
+        }
+    }
 
-                    // signals the thoughtsadapter to refresh its views
-                    thoughtsAdapter.notifyDataSetChanged()
+    fun parseData(snapshot:QuerySnapshot) {
+        //dont want duplicates
+        thoughts.clear()
+        //parse out data
+        for (document in snapshot.documents) {
+            val data = document.data
+            val name = data?.get(USERNAME) as String
+            val date = data[TIMESTAMP] as Timestamp
+            val timestamp = date.toDate()
+            val thoughtTxt = data[THOUGHT_TXT] as String
+            val numLikes = data[NUM_LIKES] as Long
+            val numComments = data[NUM_COMMENTS] as Long
+            val documentId = document.id
 
-                } . addOnFailureListener { exception ->
-                    Log.e("Exception", "Could not add post: $exception")
-                }
+            val newThought = Thought(name, timestamp, thoughtTxt,
+                    numLikes.toInt(), numComments.toInt(), documentId )
 
+            thoughts.add(newThought)
+        }
 
+        // signals the thoughtsadapter to refresh its views
+        thoughtsAdapter.notifyDataSetChanged()
     }
 
     fun mainFunnyClicked(view: View) {
@@ -82,6 +122,9 @@ class MainActivity : AppCompatActivity() {
         mainCrazyBtn.isChecked = false
         mainPopularBtn.isChecked = false
         selectedCategory = FUNNY
+
+        thoughtsListener.remove()
+        setListener()
     }
 
     fun mainSeriousClicked(view: View) {
@@ -93,6 +136,9 @@ class MainActivity : AppCompatActivity() {
         mainCrazyBtn.isChecked = false
         mainPopularBtn.isChecked = false
         selectedCategory = SERIOUS
+
+        thoughtsListener.remove()
+        setListener()
     }
 
     fun mainCrazyClicked(view:View) {
@@ -104,6 +150,9 @@ class MainActivity : AppCompatActivity() {
         mainSeriousBtn.isChecked = false
         mainPopularBtn.isChecked = false
         selectedCategory = CRAZY
+
+        thoughtsListener.remove()
+        setListener()
     }
 
     fun mainPopularClicked(view:View) {
@@ -115,5 +164,8 @@ class MainActivity : AppCompatActivity() {
         mainSeriousBtn.isChecked = false
         mainCrazyBtn.isChecked = false
         selectedCategory = POPULAR
+
+        thoughtsListener.remove()
+        setListener()
     }
 }
