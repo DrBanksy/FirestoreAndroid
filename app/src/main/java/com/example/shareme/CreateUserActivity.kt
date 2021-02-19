@@ -50,7 +50,6 @@ class CreateUserActivity : AppCompatActivity() {
                 data.put(DATE_CREATED, FieldValue.serverTimestamp())
                 Log.e("here", "logged")
                 result.user?.let { FirebaseFirestore.getInstance().collection(USERS_REF).document(it.uid)
-
                     .set(data)
                     .addOnSuccessListener {
                         finish()

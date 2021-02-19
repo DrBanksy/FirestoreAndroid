@@ -4,11 +4,14 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.ToggleButton
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
@@ -25,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     val thoughts = arrayListOf<Thought>()
     val thoughtsCollectionRef = FirebaseFirestore.getInstance().collection(THOUGHTS_REF)
     lateinit var thoughtsListener : ListenerRegistration
+    lateinit var auth : FirebaseAuth
 
     var selectedCategory = FUNNY
 
@@ -36,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         mainFunnyBtn = findViewById(R.id.mainFunnyBtn)
         mainPopularBtn = findViewById(R.id.mainPopularBtn)
         thoughtListView = findViewById(R.id.thoughtListView)
+        auth = FirebaseAuth.getInstance()
 
         fab = findViewById(R.id.fab)
 
@@ -54,8 +59,58 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        setListener()
+        updateUI()
         Log.e("MainActivity", "OnResume Called")
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        val menuItem = menu.getItem(0)
+        if(auth.currentUser == null) {
+            //logged out
+            menuItem.title = "Login"
+        } else {
+            //logged in
+            menuItem.title = "Logout"
+        }
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.action_login) {
+            if(auth.currentUser == null) {
+                val loginIntent = Intent(this, LoginActivity::class.java)
+                startActivity(loginIntent)
+            } else {
+                auth.signOut()
+                updateUI()
+            }
+            return true
+        }
+        return false
+    }
+
+    fun updateUI() {
+        if(auth.currentUser == null) {
+            mainCrazyBtn.isEnabled = false
+            mainPopularBtn.isEnabled = false
+            mainFunnyBtn.isEnabled = false
+            mainSeriousBtn.isEnabled = false
+            fab.isEnabled = false
+            thoughts.clear()
+            thoughtsAdapter.notifyDataSetChanged()
+        } else {
+            mainCrazyBtn.isEnabled = true
+            mainPopularBtn.isEnabled = true
+            mainFunnyBtn.isEnabled = true
+            mainSeriousBtn.isEnabled = true
+            fab.isEnabled = true
+            setListener()
+        }
     }
 
     fun setListener() {
