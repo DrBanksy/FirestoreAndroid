@@ -1,4 +1,4 @@
-package com.example.shareme
+package com.example.shareme.Activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.TextView
+import com.example.shareme.R
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.ktx.Firebase
 
 class LoginActivity : AppCompatActivity() {
 

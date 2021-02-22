@@ -1,4 +1,4 @@
-package com.example.shareme
+package com.example.shareme.Activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -10,6 +10,9 @@ import android.view.View
 import android.widget.ToggleButton
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.shareme.*
+import com.example.shareme.Adapters.ThoughtsAdapter
+import com.example.shareme.Model.Thought
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -48,7 +51,11 @@ class MainActivity : AppCompatActivity() {
             val addThoughtIntent = Intent(this, AddThoughtActivity::class.java)
             startActivity(addThoughtIntent)
         }
-        thoughtsAdapter = ThoughtsAdapter(thoughts)
+        thoughtsAdapter = ThoughtsAdapter(thoughts) {thought ->
+            val commentsActivity = Intent(this, CommentsActivity::class.java)
+            commentsActivity.putExtra(DOCUMENT_KEY, thought.documentId)
+            startActivity(commentsActivity)
+        }
         thoughtListView.adapter = thoughtsAdapter
         val layoutManager = LinearLayoutManager(this)
         thoughtListView.layoutManager = layoutManager

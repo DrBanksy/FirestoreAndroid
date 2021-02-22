@@ -1,15 +1,14 @@
-package com.example.shareme
+package com.example.shareme.Activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.TextView
 import android.widget.ToggleButton
+import com.example.shareme.*
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import org.w3c.dom.Text
 
 class AddThoughtActivity : AppCompatActivity() {
 

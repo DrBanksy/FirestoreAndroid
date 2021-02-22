@@ -1,10 +1,14 @@
-package com.example.shareme
+package com.example.shareme.Activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.TextView
+import com.example.shareme.DATE_CREATED
+import com.example.shareme.R
+import com.example.shareme.USERNAME
+import com.example.shareme.USERS_REF
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FieldValue
